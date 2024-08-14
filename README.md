@@ -42,7 +42,7 @@ The script will navigate through the products on the website, extract the Easter
 
 You can reset the list of extracted coupons by accessing the following endpoint:
 
-\`\`\`sh
+
 # Reset the coupons file:
 http://localhost:5000/reset_coupons
 \`\`\`
@@ -53,7 +53,7 @@ This will clear the contents of the \`coupons.txt\` file where the coupons are s
 
 To retrieve the previously extracted coupons, you can use the following endpoint:
 
-\`\`\`sh
+
 # Retrieve previous coupons:
 http://localhost:5000/get_previous_coupons
 \`\`\`
@@ -122,7 +122,7 @@ Resets the \`coupons.txt\` file by clearing its contents.
 
 To install the required packages, run the following command:
 
-\`\`\`sh
+
 pip install -r requirements.txt
 \`\`\`
 
@@ -130,7 +130,7 @@ pip install -r requirements.txt
 
 To run the Flask application, use the following command:
 
-\`\`\`sh
+
 python app.py
 \`\`\`
 
