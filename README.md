@@ -31,7 +31,7 @@ This is a Flask web application that automates the process of extracting coupon 
 
 This example shows how to run the script to extract a specified number of discounts.
 
-\`\`\`sh
+
 # Access the application at the root endpoint, and start the script to extract 10 discounts:
 http://localhost:5000/run_script?num_discounts=10
 \`\`\`
