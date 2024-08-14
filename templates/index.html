@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script type="text/javascript">
+        // Function to reset coupons.txt on page load or refresh
+        window.onload = function() {
+            // console.log('Page loaded or refreshed.');
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', '/reset_coupons', false); // Using GET for simplicity
+            xhr.send();
+        };
+    </script>
+    <title>Colector de Reduceri</title>
+    <script type="text/javascript">
+        // Send request to delete coupons.txt when user navigates away
+        window.addEventListener('beforeunload', function (event) {
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', '/delete_coupons', false); // Using GET for simplicity
+            xhr.send();
+        });
+    </script>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 900px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        h1, h2 {
+            text-align: center;
+            color: #343a40;
+        }
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+        h2 {
+            font-size: 1.5em;
+            margin-top: 30px;
+        }
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+        .button {
+            flex: 1 1 calc(30% - 20px);
+            margin: 10px;
+            padding: 15px;
+            background-color: #007bff;
+            color: #fff;
+            text-align: center;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        .button:hover {
+            background-color: #0056b3;
+        }
+        .button[disabled] {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        .coupon {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            background-color: #f8f9fa;
+            text-align: center;
+        }
+        .coupon h2 {
+            color: #343a40;
+            font-size: 1.5em;
+            margin-bottom: 10px;
+        }
+        .coupon p {
+            margin: 5px 0;
+        }
+        .coupon p strong {
+            color: #007bff;
+        }
+        .coupon img {
+            margin: 10px 0;
+        }
+        .coupon .code-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 15px;
+        }
+        .coupon .coupon-code {
+            font-size: 1.2em;
+            padding: 10px 20px;
+            border: 1px solid #007bff;
+            border-radius: 5px;
+            margin-right: 10px;
+            background-color: #fff;
+            color: #007bff;
+            font-weight: bold;
+        }
+        .coupon .copy-btn {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        .coupon .copy-btn:hover {
+            background-color: #218838;
+        }
+        .loading {
+            text-align: center;
+            font-size: 18px;
+            color: #888;
+        }
+        .logs {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            background-color: #f0f0f0;
+            border-radius: 5px;
+            max-height: 300px;
+            overflow-y: auto;
+            display: none;
+        }
+        .progress-bar-container {
+            width: 100%;
+            background-color: #ddd;
+            border-radius: 5px;
+            margin: 20px 0;
+            position: relative;
+            height: 25px;
+        }
+        .progress-bar {
+            width: 0;
+            height: 100%;
+            border-radius: 5px;
+            transition: width 0.3s;
+            position: relative;
+        }
+        .progress-bar.red {
+            background-color: #ff0000;
+        }
+        .progress-bar.yellow {
+            background-color: #ffff00;
+            color: #333;
+        }
+        .progress-bar.green {
+            background-color: #28a745;
+        }
+        .progress-bar span {
+            position: absolute;
+            width: 100%;
+            text-align: center;
+            font-weight: bold;
+            line-height: 25px;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgb(0,0,0);
+            background-color: rgba(0,0,0,0.4);
+            padding-top: 60px;
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 600px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .input-group {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+        }
+        .input-group input {
+            width: 100px;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-right: 10px;
+        }
+        .notification {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #28a745;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .notification.error {
+            background-color: #dc3545;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Colector de Reduceri</h1>
+        <div class="input-group">
+            <label for="num_discounts">Numărul de cupoane dorite:</label>
+            <input type="number" id="num_discounts" name="num_discounts" min="1" max="20" value="1">
+        </div>
+        <div class="button-container">
+            <button class="button" id="runButton" onclick="runScript()">Rulați Scriptul</button>
+            <button class="button" id="historyButton" onclick="showHistory()">Vezi Istoricul Cupoanelor</button>
+            <button class="button" id="toggleLogsButton" onclick="toggleLogs()">Afișează progresul din rulare</button>
+        </div>
+        <div class="progress-bar-container">
+            <div id="progress-bar" class="progress-bar red"><span id="progress-text"></span></div>
+        </div>
+        <div id="loading" class="loading" style="display: none;">Scriptul rulează, vă rugăm așteptați...</div>
+        <h2>Cupoane Colectate</h2>
+        <div id="coupons"></div>
+        <div id="logs" class="logs"></div>
+    </div>
+
+    <!-- The Modal -->
+    <div id="historyModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2>Istoricul Cupoanelor</h2>
+            <div id="previous-coupons"></div>
+        </div>
+    </div>
+
+    <!-- Notification -->
+    <div id="notification" class="notification"></div>
+
+    <script>
+        function runScript() {
+            const numDiscounts = document.getElementById('num_discounts').value;
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('runButton').disabled = true;
+            const logsDiv = document.getElementById('logs');
+            logsDiv.innerHTML = '';  // Clear previous logs
+            const progressBar = document.getElementById('progress-bar');
+            const progressText = document.getElementById('progress-text');
+            progressBar.className = 'progress-bar red';
+            const eventSource = new EventSource(`/run_script?num_discounts=${numDiscounts}`);
+            eventSource.onmessage = function(event) {
+                const logEntry = document.createElement('div');
+                logEntry.textContent = event.data;
+                logsDiv.appendChild(logEntry);
+                logsDiv.scrollTop = logsDiv.scrollHeight;  // Auto-scroll to the latest log
+
+                if (event.data.startsWith("Progres")) {
+    const progress = (logsDiv.children.length / numDiscounts) * 100;
+
+    // Cap progress at 100%
+    const cappedProgress = Math.min(progress, 100);
+
+    progressBar.style.width = cappedProgress + '%';
+    progressText.textContent = Math.round(cappedProgress) + '%';
+
+            if (cappedProgress <= 50) {
+                progressBar.className = 'progress-bar red';
+            } else if (cappedProgress <= 99) {
+                progressBar.className = 'progress-bar yellow';
+            } else {
+                progressBar.className = 'progress-bar green';
+            }
+        } else {
+            loadCoupons();
+        }
+
+            };
+            eventSource.onerror = function() {
+                eventSource.close();
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('runButton').disabled = false;
+                loadCoupons();
+            };
+        }
+
+        function loadCoupons() {
+            fetch('/get_coupons').then(response => response.json()).then(data => {
+                const couponsDiv = document.getElementById('coupons');
+                couponsDiv.innerHTML = '';
+                data.forEach(coupon => {
+                    const couponDiv = document.createElement('div');
+                    couponDiv.className = 'coupon';
+                    couponDiv.innerHTML = `
+                        <h2>FELICITARI!</h2>
+                        <p><strong>${coupon[1]}</strong></p>
+                        <img src="https://cdn.cupio.ro/media/eastereggs/6666c69a1454c.png" alt="Sunkissed">
+                        <p>Folosește codul de mai jos pentru a beneficia de ofertă</p>
+                        <div class="code-container">
+                            <span class="coupon-code">${coupon[0]}</span>
+                            <button class="copy-btn" onclick="copyToClipboard('${coupon[0]}')">📋</button>
+                        </div>
+                        <p>*Atentie: nu închide notificarea înainte să salvezi codul.</p>
+                        <p>**Codul este valabil până în 30 Septembrie 2024.</p>
+                    `;
+                    couponsDiv.appendChild(couponDiv);
+                });
+            });
+        }
+
+         function loadPreviousCoupons() {
+            fetch('/get_previous_coupons').then(response => response.json()).then(data => {
+                if (data.error) {
+                    showNotification(data.error, true);
+                    return;
+                }
+                const previousCouponsDiv = document.getElementById('previous-coupons');
+                previousCouponsDiv.innerHTML = '';
+                data.forEach(coupon => {
+                    const couponDiv = document.createElement('div');
+                    couponDiv.className = 'coupon';
+                    couponDiv.innerHTML = coupon.replace(/\n/g, '<br>');
+                    previousCouponsDiv.appendChild(couponDiv);
+                });
+                document.getElementById('historyModal').style.display = 'block';
+            });
+        }
+
+function showHistory() {
+    loadPreviousCoupons();
+}
+
+function closeModal() {
+    document.getElementById('historyModal').style.display = 'none';
+}
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showNotification(`Codul ${text} s-a copiat cu succes!`);
+            });
+        }
+
+        function showNotification(message, isError = false) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.classList.toggle('error', isError);
+            notification.style.display = 'block';
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 3000);
+        }
+
+        function toggleLogs() {
+            const logsDiv = document.getElementById('logs');
+            logsDiv.style.display = logsDiv.style.display === 'none' ? 'block' : 'none';
+        }
+
+        loadCoupons();
+    </script>
+</body>
+</html>
